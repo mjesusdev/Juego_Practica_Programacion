@@ -8,9 +8,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -29,23 +26,13 @@ public class NuevaPartida extends JFrame implements WindowListener, ActionListen
 	// Campo de Texto y tamaño al campo
 	JTextField txtJugador = new JTextField(15);
 	JButton btnComenzar = new JButton("Comenzar Partida");
-
+	
 	// Paneles
 	JPanel pnlSuperior = new JPanel();
 	JPanel pnlCentral = new JPanel();
 	JPanel pnlInferior = new JPanel();
-
-	// BD
-	String driver = "com.mysql.jdbc.Driver";
-	String url = "jdbc:mysql://localhost:3306/duolingobd?autoReconnect=true&useSSL=false";
-	String login = "root";
-	String password = "Studium2018;";
-	String sentencia = null;
-	Connection connection = null;
-	Statement statement = null;
-	ResultSet rs = null;
 	
-	NuevaPartida(){
+	NuevaPartida(String nombreJugador){
 		// Almacenamos en mipantalla el sistema nativo de pantallas, el tamaño por defecto de la pantalla
 		Toolkit mipantalla = Toolkit.getDefaultToolkit();
 
@@ -70,8 +57,8 @@ public class NuevaPartida extends JFrame implements WindowListener, ActionListen
 		// Establecer un icono a la aplicación
 		Image miIcono = mipantalla.getImage("src//duo.png");
 		// Colocar icono
-		setIconImage(miIcono);	
-
+		setIconImage(miIcono);
+			
 		// Tamaño a la ventana
 		setSize(300,150);
 		// Ventana al centro
@@ -83,13 +70,13 @@ public class NuevaPartida extends JFrame implements WindowListener, ActionListen
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		String nombreJugador = txtJugador.getText();
-
+		
 		if (btnComenzar.equals(arg0.getSource())) {
 			if (nombreJugador.equals("")) {
 				JOptionPane.showMessageDialog(null, "Tiene que proporcionar un nombre...", "Error", JOptionPane.ERROR_MESSAGE);
-			}else {
+			}else{
 				this.setVisible(false);
-				new Tablero();
+				new Tablero(nombreJugador);
 			}
 		}
 	}

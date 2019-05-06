@@ -139,7 +139,7 @@ public class Duolingo extends JFrame implements WindowListener, ActionListener{
 		if (menuNuevaPartidaNP.equals(arg0.getSource())) 
 		{
 			// Llamar a la clase NuevaPartida 
-			new NuevaPartida();
+			new NuevaPartida(null);
 			// Hacer invisible el frame o la ventana
 			setVisible(false);
 		}

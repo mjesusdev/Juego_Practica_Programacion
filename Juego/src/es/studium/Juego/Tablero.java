@@ -8,11 +8,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -72,8 +78,21 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 	JPanel pnlFallar = new JPanel();
 	JPanel pnlBotonesIn = new JPanel();
 
-	Tablero()
+	// BD
+	String driver = "com.mysql.jdbc.Driver";
+	String url = "jdbc:mysql://localhost:3306/duolingobd?autoReconnect=true&useSSL=false";
+	String login = "root";
+	String password = "Studium2018;";
+	String sentencia = null;
+	Connection connection = null;
+	Statement statement = null;
+	ResultSet rs = null;
+	
+	String nombrejugador;
+	
+	Tablero(String jugador)
 	{
+		nombrejugador = jugador;
 		// Almacenamos en mipantalla el sistema nativo de pantallas, el tamaño por defecto de la pantalla
 		Toolkit mipantalla = Toolkit.getDefaultToolkit();
 
@@ -84,6 +103,7 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 		pnl1.add(lbl1);
 		pnlFrase.add(lblFrase);
 		pnlTexto.add(txtFrase);
+		txtFrase.setEditable(false);
 
 		// Tamaño al Panel Botones 1 y 2
 		pnlBotones1.setLayout(new GridLayout(0,2,5,5));
@@ -163,10 +183,9 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 		setResizable(false);
 		setVisible(true);
 	}
-
+	
 	@Override
 	public void actionPerformed(ActionEvent ae) {
-
 		String textofrase = btn1.getText();
 		String textofrase1 = btn2.getText();
 		String textofrase2 = btn3.getText();
@@ -188,12 +207,46 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 			txtFrase.setText(txtFrase.getText()+" "+textofrase3);
 		}
 
-
 		String textoFinal = txtFrase.getText();
 
 		if (btnCalificar.equals(ae.getSource())) {
 			if (textoFinal.equals(" Esto es un juego")) {
 				DialogoCorrecto.setVisible(true);
+				
+				try
+				{
+					Class.forName(driver);
+					connection = DriverManager.getConnection(url, login, password);
+					//Crear una sentencia
+					statement = connection.createStatement();
+					sentencia = "INSERT INTO jugador VALUES(NULL, '"+nombrejugador+"', 50, 1, 0);";
+					System.out.println(sentencia);
+					// Ejecutar la sentencia
+					statement.executeUpdate(sentencia);
+				}
+				
+				catch (ClassNotFoundException cnfe)
+				{
+					System.out.println("Error 1: "+cnfe.getMessage());
+				}
+				catch (SQLException sqle)
+				{
+					JOptionPane.showMessageDialog(null, "Error, en el Alta", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+				finally
+				{
+					try
+					{
+						if(connection!=null)
+						{
+							connection.close();
+						}
+					}
+					catch (SQLException se)
+					{
+						System.out.println("No se puede cerrar la conexión la Base De Datos");
+					}
+				}
 			}else {
 				DialogoIncorrecto.setVisible(true);
 			}
