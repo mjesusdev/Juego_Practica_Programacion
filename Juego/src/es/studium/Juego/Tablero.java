@@ -1,26 +1,10 @@
 package es.studium.Juego;
 
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.awt.*;
+import java.awt.event.*;
+import java.sql.*;
 
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 public class Tablero extends JFrame implements WindowListener, ActionListener{
 
@@ -28,7 +12,7 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 
 	// Componentes para la Ventana
 	JLabel lbl1 = new JLabel("Seleccione bloques para completar la frase en inglés");
-	JLabel lblFrase = new JLabel("This is a game");
+	JLabel lblFrase = new JLabel("");
 	JTextField txtFrase = new JTextField(25);
 
 	// Botones
@@ -79,14 +63,14 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 	JPanel pnlBotonesIn = new JPanel();
 
 	// BD
-	String driver = "com.mysql.jdbc.Driver";
-	String url = "jdbc:mysql://localhost:3306/duolingobd?autoReconnect=true&useSSL=false";
-	String login = "root";
-	String password = "Studium2018;";
-	String sentencia = null;
-	Connection connection = null;
-	Statement statement = null;
-	ResultSet rs = null;
+	static String driver = "com.mysql.jdbc.Driver";
+	static String url = "jdbc:mysql://localhost:3306/duolingobd?autoReconnect=true&useSSL=false";
+	static String login = "root";
+	static String password = "Studium2018;";
+	static String sentencia = null;
+	static Connection connection = null;
+	static Statement statement = null;
+	static ResultSet rs = null;
 	
 	String nombrejugador;
 	
@@ -104,6 +88,7 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 		pnlFrase.add(lblFrase);
 		pnlTexto.add(txtFrase);
 		txtFrase.setEditable(false);
+		insertarPregunta(lblFrase);
 
 		// Tamaño al Panel Botones 1 y 2
 		pnlBotones1.setLayout(new GridLayout(0,2,5,5));
@@ -184,6 +169,75 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 		setVisible(true);
 	}
 	
+	public static void desconectar() {
+		try
+		{
+			if(connection!=null)
+			{
+				connection.close();
+			}
+		}
+		catch (SQLException se)
+		{
+			System.out.println("No se puede cerrar la conexión la Base De Datos");
+		}
+	}
+	
+	public static void insertarPregunta(JLabel lblFrase) {
+		try
+		{
+			Class.forName(driver);
+			connection = DriverManager.getConnection(url, login, password);
+			statement = connection.createStatement();
+			sentencia = "SELECT preguntas FROM preguntas WHERE idPreguntas = 1;";
+			System.out.println(sentencia);
+			rs = statement.executeQuery(sentencia);
+			while (rs.next()) {
+				String pregunta = rs.getString("preguntas");
+				lblFrase.setText(pregunta);
+			}
+		}
+		
+		catch (ClassNotFoundException cnfe)
+		{
+			System.out.println("Error 1: "+cnfe.getMessage());
+		}
+		catch (SQLException sqle)
+		{
+			JOptionPane.showMessageDialog(null, "Se ha producido un error", "Error", JOptionPane.ERROR_MESSAGE);
+		}
+		desconectar();
+	}
+	
+	public static String comprobarRespuesta() {
+		try
+		{
+			Class.forName(driver);
+			connection = DriverManager.getConnection(url, login, password);
+			statement = connection.createStatement();
+			sentencia = "SELECT respuestas FROM respuestas WHERE idRespuestas = 1;";
+			System.out.println(sentencia);
+			rs = statement.executeQuery(sentencia);
+			rs.next();
+			
+			String respuesta = rs.getString("respuestas");
+			System.out.println(respuesta);
+			return respuesta;
+		}
+		
+		catch (ClassNotFoundException cnfe)
+		{
+			System.out.println("Error 1: "+cnfe.getMessage());
+		}
+		catch (SQLException sqle)
+		{
+			JOptionPane.showMessageDialog(null, "Se ha producido un error", "Error", JOptionPane.ERROR_MESSAGE);
+		}
+		desconectar();
+		
+		return null;
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent ae) {
 		String textofrase = btn1.getText();
@@ -195,22 +249,22 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 			txtFrase.setText(txtFrase.getText()+" "+textofrase);
 		}
 
-		if ((btn2.equals(ae.getSource()))) {
+		else if ((btn2.equals(ae.getSource()))) {
 			txtFrase.setText(txtFrase.getText()+" "+textofrase1);
 		}
 
-		if ((btn3.equals(ae.getSource()))) {
+		else if ((btn3.equals(ae.getSource()))) {
 			txtFrase.setText(txtFrase.getText()+" "+textofrase2);
 		}
 
-		if ((btn4.equals(ae.getSource()))) {
+		else if ((btn4.equals(ae.getSource()))) {
 			txtFrase.setText(txtFrase.getText()+" "+textofrase3);
 		}
 
 		String textoFinal = txtFrase.getText();
 
 		if (btnCalificar.equals(ae.getSource())) {
-			if (textoFinal.equals(" Esto es un juego")) {
+			if (textoFinal.equals(" " +comprobarRespuesta())) {
 				DialogoCorrecto.setVisible(true);
 				
 				try
@@ -231,48 +285,59 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 				}
 				catch (SQLException sqle)
 				{
+					JOptionPane.showMessageDialog(null, "Se ha producido un error", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+				desconectar();
+			}
+			
+			else{
+				DialogoIncorrecto.setVisible(true);
+				
+				try
+				{
+					Class.forName(driver);
+					connection = DriverManager.getConnection(url, login, password);
+					//Crear una sentencia
+					statement = connection.createStatement();
+					sentencia = "INSERT INTO jugador VALUES(NULL, '"+nombrejugador+"', 0, 0, 1);";
+					System.out.println(sentencia);
+					// Ejecutar la sentencia
+					statement.executeUpdate(sentencia);
+				}
+				
+				catch (ClassNotFoundException cnfe)
+				{
+					System.out.println("Error 1: "+cnfe.getMessage());
+				}
+				catch (SQLException sqle)
+				{
 					JOptionPane.showMessageDialog(null, "Error, en el Alta", "Error", JOptionPane.ERROR_MESSAGE);
 				}
-				finally
-				{
-					try
-					{
-						if(connection!=null)
-						{
-							connection.close();
-						}
-					}
-					catch (SQLException se)
-					{
-						System.out.println("No se puede cerrar la conexión la Base De Datos");
-					}
-				}
-			}else {
-				DialogoIncorrecto.setVisible(true);
+				desconectar();
 			}
 		}
 
-		if (btnLimpiar.equals(ae.getSource())) {
+		else if (btnLimpiar.equals(ae.getSource())) {
 			txtFrase.setText("");
 		}
 
-		if (btnVolver.equals(ae.getSource())) {
+		else if (btnVolver.equals(ae.getSource())) {
 			DialogoCorrecto.setVisible(false);
 			setVisible(true);
 		}
 
-		if (btnVolver1.equals(ae.getSource())) {
+		else if (btnVolver1.equals(ae.getSource())) {
 			DialogoIncorrecto.setVisible(false);
 			setVisible(true);
 		}
 
-		if (btnNuevaPartida.equals(ae.getSource())) {
+		else if (btnNuevaPartida.equals(ae.getSource())) {
 			DialogoCorrecto.setVisible(false);
 			setVisible(false);
 			new Tablero2();
 		}
 
-		if (btnNuevaPartida1.equals(ae.getSource())) {
+		else if (btnNuevaPartida1.equals(ae.getSource())) {
 			DialogoIncorrecto.setVisible(false);
 			setVisible(false);
 			new Tablero2();
