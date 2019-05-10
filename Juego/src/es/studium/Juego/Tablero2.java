@@ -9,11 +9,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class Tablero2 extends WindowAdapter implements ActionListener{
@@ -21,16 +27,13 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 	JFrame NuevaPartida2 = new JFrame("Tablero");
 
 	// Componentes para la Ventana
-	JLabel lblSeleccionar = new JLabel("Seleccione la traducción correcta");
-	JLabel lblFrase = new JLabel("This morning not I have eat breakfast");
+	JLabel lblSeleccionar = new JLabel("Seleccione la traducción correcta de esta frase");
+	JLabel lblFrase = new JLabel("");
 
 	// Botones
 	JButton btn1 = new JButton("Esta mañana no he desayunado");
 	JButton btn2 = new JButton("Hoy no he desayunado");
 	JButton btnCalificar = new JButton("Calificar");
-
-	// Panel Seleccionar
-	JPanel pnlSeleccionar = new JPanel();
 
 	// Panel Frase
 	JPanel pnlFrase = new JPanel();
@@ -57,24 +60,27 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 
 	// Componentes Diálogo Incorrecto
 	JLabel lblError = new JLabel("Has fallado, inténtelo de nuevo");
-	JButton btnVolver1 = new JButton("Volver");
 	JButton btnNuevaPartida1 = new JButton("Nueva Partida");
+
+	// BD
+	static String driver = "com.mysql.jdbc.Driver";
+	static String url = "jdbc:mysql://localhost:3306/duolingobd?autoReconnect=true&useSSL=false";
+	static String login = "root";
+	static String password = "Studium2018;";
+	static String sentencia = null;
+	static Connection connection = null;
+	static Statement statement = null;
+	static ResultSet rs = null;
 
 	Tablero2()
 	{
-		// Almacenamos en mipantalla el sistema nativo de pantallas, el tamaño por defecto de la pantalla
-		Toolkit mipantalla = Toolkit.getDefaultToolkit();
-
 		// Aplicar Layout
 		NuevaPartida2.setLayout(new GridLayout(5,2));
 
 		// Añadir al Panel frase la frase
 		pnlFrase.add(lblSeleccionar);
 		pnlFrase.add(lblFrase);
-
-		// Tamaño al Panel Botones 
-		//pnlBoton.setLayout(new GridLayout(0,1,1,0));
-		//pnlBoton1.setLayout(new FlowLayout());
+		insertarPregunta();
 
 		// Añadir la primera frase y la segunda a los paneles boton y boton2
 		pnlBoton.add(btn1);
@@ -104,7 +110,6 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 		DialogoIncorrecto.setTitle("Pregunta Incorrecta");
 		DialogoIncorrecto.setLayout(new FlowLayout());
 		DialogoIncorrecto.add(lblError);
-		DialogoIncorrecto.add(btnVolver1);
 		DialogoIncorrecto.add(btnNuevaPartida1);
 		DialogoIncorrecto.setSize(210,100);
 		DialogoIncorrecto.setLocationRelativeTo(null);
@@ -123,15 +128,10 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 		DialogoCorrecto.addWindowListener(this);
 
 		// Listeners del Diálogo Pregunta Incorrecta
-		btnVolver1.addActionListener(this);
 		btnNuevaPartida1.addActionListener(this);
 		DialogoIncorrecto.addWindowListener(this);
 
-		// Establecer un icono a la aplicación
-		Image miIcono = mipantalla.getImage("src//duo.png");
-
-		// Colocar icono
-		NuevaPartida2.setIconImage(miIcono);
+		colocarIcono();
 
 		NuevaPartida2.setSize(400,250);
 		NuevaPartida2.setLocationRelativeTo(null);
@@ -139,31 +139,77 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 		NuevaPartida2.setVisible(true);
 	}
 
+	public void colocarIcono() {
+		Toolkit mipantalla = Toolkit.getDefaultToolkit();
+		Image miIcono = mipantalla.getImage("src//farmacia.png");
+		NuevaPartida2.setIconImage(miIcono);
+	}
+
+	public void insertarPregunta() {
+		try
+		{
+			Class.forName(driver);
+			connection = DriverManager.getConnection(url, login, password);
+			statement = connection.createStatement();
+			sentencia = "SELECT preguntas FROM preguntas WHERE idPreguntas = 2;";
+			System.out.println(sentencia);
+			rs = statement.executeQuery(sentencia);
+			while (rs.next()) {
+				String pregunta = rs.getString("preguntas");
+				lblFrase.setText(pregunta);
+			}
+		}
+
+		catch (ClassNotFoundException cnfe)
+		{
+			System.out.println("Error 1: "+cnfe.getMessage());
+		}
+		catch (SQLException sqle)
+		{
+			JOptionPane.showMessageDialog(null, "Se ha producido un error", "Error", JOptionPane.ERROR_MESSAGE);
+		}
+		desconectar();
+	}
+
+	public static void desconectar() {
+		try
+		{
+			if(connection!=null)
+			{
+				connection.close();
+			}
+		}
+		catch (SQLException se)
+		{
+			System.out.println("No se puede cerrar la conexión la Base De Datos");
+		}
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent ae) {
 
 		if ((btn1.equals(ae.getSource())))
 		{
-
+			
 		}
-
-		if ((btn2.equals(ae.getSource()))) 
-		{
-
-		}
-
+		
 		if (btnCalificar.equals(ae.getSource())) {
-			DialogoIncorrecto.setVisible(true);
+			if ((btn1.equals(ae.getSource())))
+			{
+				DialogoCorrecto.setVisible(false);
+				NuevaPartida2.setVisible(true);
+			}
+			
+			if ((btn2.equals(ae.getSource()))) 
+			{
+				DialogoIncorrecto.setVisible(true);
+				btn2.setSelected(true);
+			}
 		}
 
-		if (btnVolver.equals(ae.getSource())) {
-			DialogoCorrecto.setVisible(false);
-			NuevaPartida2.setVisible(true);
-		}
-
-		if (btnVolver1.equals(ae.getSource())) {
-			DialogoIncorrecto.setVisible(false);
-			NuevaPartida2.setVisible(true);
+		else if (btnVolver.equals(ae.getSource())) {
+			NuevaPartida2.setVisible(false);
+			new Duolingo();
 		}
 	}
 
