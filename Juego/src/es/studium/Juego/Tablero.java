@@ -311,7 +311,7 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 				}
 				catch (SQLException sqle)
 				{
-					JOptionPane.showMessageDialog(null, "Error, en el Alta", "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Error", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 				desconectar();
 			}
@@ -334,13 +334,13 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 		else if (btnNuevaPartida.equals(ae.getSource())) {
 			DialogoCorrecto.setVisible(false);
 			setVisible(false);
-			new Tablero2();
+			new Tablero2(nombrejugador);
 		}
 
 		else if (btnNuevaPartida1.equals(ae.getSource())) {
 			DialogoIncorrecto.setVisible(false);
 			setVisible(false);
-			new Tablero2();
+			new Tablero2(nombrejugador);
 		}
 	}
 

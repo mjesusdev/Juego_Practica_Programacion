@@ -72,8 +72,11 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 	static Statement statement = null;
 	static ResultSet rs = null;
 
-	Tablero2()
+	String nombrejugador;
+	
+	Tablero2(String jugador)
 	{
+		nombrejugador = jugador;
 		// Aplicar Layout
 		NuevaPartida2.setLayout(new GridLayout(5,2));
 
@@ -141,7 +144,7 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 
 	public void colocarIcono() {
 		Toolkit mipantalla = Toolkit.getDefaultToolkit();
-		Image miIcono = mipantalla.getImage("src//farmacia.png");
+		Image miIcono = mipantalla.getImage("src//duo.png");
 		NuevaPartida2.setIconImage(miIcono);
 	}
 
@@ -190,20 +193,60 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 
 		if ((btn1.equals(ae.getSource())))
 		{
-			
+			btnCalificar.doClick(500);
 		}
 		
-		if (btnCalificar.equals(ae.getSource())) {
-			if ((btn1.equals(ae.getSource())))
+		else if (btnCalificar.equals(ae.getSource())) {
+			
+			String btn1text = btn1.getText();
+			
+			if (btn1text.equals(btn1text))
 			{
-				DialogoCorrecto.setVisible(false);
-				NuevaPartida2.setVisible(true);
+				DialogoCorrecto.setVisible(true);
+				
+				try
+				{
+					Class.forName(driver);
+					connection = DriverManager.getConnection(url, login, password);
+					statement = connection.createStatement();
+					sentencia = "UPDATE jugador SET preguntas_Correctas= '2', puntos= '100' WHERE nombreJugador = '"+nombrejugador+"';";
+					System.out.println(sentencia);
+					statement.executeUpdate(sentencia);
+				}
+				
+				catch (ClassNotFoundException cnfe)
+				{
+					System.out.println("Error 1: "+cnfe.getMessage());
+				}
+				catch (SQLException sqle)
+				{
+					JOptionPane.showMessageDialog(null, "Se ha producido un error", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+				desconectar();
 			}
 			
-			if ((btn2.equals(ae.getSource()))) 
-			{
+			else {
 				DialogoIncorrecto.setVisible(true);
-				btn2.setSelected(true);
+				
+				try
+				{
+					Class.forName(driver);
+					connection = DriverManager.getConnection(url, login, password);
+					statement = connection.createStatement();
+					sentencia = "UPDATE jugador SET preguntas_Incorrectas= '2' WHERE nombreJugador = '"+nombrejugador+"';";
+					System.out.println(sentencia);
+					statement.executeUpdate(sentencia);
+				}
+				
+				catch (ClassNotFoundException cnfe)
+				{
+					System.out.println("Error 1: "+cnfe.getMessage());
+				}
+				catch (SQLException sqle)
+				{
+					JOptionPane.showMessageDialog(null, "Se ha producido un error", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+				desconectar();
 			}
 		}
 
@@ -217,7 +260,7 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 	public void windowClosing(WindowEvent arg0) {	
 		if (DialogoCorrecto.isActive()) {
 			DialogoCorrecto.setVisible(false);
-			new Tablero2();
+			new Tablero2(nombrejugador);
 		}
 		// Cuando se cierre el frame principal se abra el juego de nuevo
 		else if(NuevaPartida2.isActive()){
