@@ -33,7 +33,6 @@ public class NuevaPartida extends JFrame implements WindowListener, ActionListen
 	JPanel pnlInferior = new JPanel();
 	
 	NuevaPartida(String nombreJugador){
-		// Almacenamos en mipantalla el sistema nativo de pantallas, el tamaño por defecto de la pantalla
 		Toolkit mipantalla = Toolkit.getDefaultToolkit();
 
 		setTitle("Nueva Partida");
@@ -82,12 +81,6 @@ public class NuevaPartida extends JFrame implements WindowListener, ActionListen
 	}
 
 	@Override
-	public void windowActivated(WindowEvent arg0) {}
-
-	@Override
-	public void windowClosed(WindowEvent arg0) {}
-
-	@Override
 	public void windowClosing(WindowEvent arg0) {
 		if (this.isActive()) {
 			this.setVisible(false);
@@ -95,16 +88,11 @@ public class NuevaPartida extends JFrame implements WindowListener, ActionListen
 		}
 	}
 
-	@Override
+	public void windowActivated(WindowEvent arg0) {}
+	public void windowClosed(WindowEvent arg0) {}
 	public void windowDeactivated(WindowEvent arg0) {}
-
-	@Override
 	public void windowDeiconified(WindowEvent arg0) {}
-
-	@Override
 	public void windowIconified(WindowEvent arg0) {}
-
-	@Override
 	public void windowOpened(WindowEvent arg0) {}
 
 	@Override
@@ -114,16 +102,6 @@ public class NuevaPartida extends JFrame implements WindowListener, ActionListen
 			btnComenzar.doClick();
 		}
 	}
-
-	@Override
-	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void keyTyped(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
+	public void keyReleased(KeyEvent arg0) {}
+	public void keyTyped(KeyEvent arg0) {}
 }

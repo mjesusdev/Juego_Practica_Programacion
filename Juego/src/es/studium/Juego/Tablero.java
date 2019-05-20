@@ -1,10 +1,26 @@
 package es.studium.Juego;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.sql.*;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 public class Tablero extends JFrame implements WindowListener, ActionListener{
 
@@ -71,9 +87,9 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 	static Connection connection = null;
 	static Statement statement = null;
 	static ResultSet rs = null;
-	
+
 	String nombrejugador;
-	
+
 	Tablero(String jugador)
 	{
 		nombrejugador = jugador;
@@ -168,7 +184,57 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 		setResizable(false);
 		setVisible(true);
 	}
-	
+
+	public static void insertarPregunta(JLabel lblFrase) {
+		try
+		{
+			Class.forName(driver);
+			connection = DriverManager.getConnection(url, login, password);
+			statement = connection.createStatement();
+			sentencia = "SELECT preguntas FROM preguntas WHERE idPreguntas = 1;";
+			rs = statement.executeQuery(sentencia);
+			while (rs.next()) {
+				String pregunta = rs.getString("preguntas");
+				lblFrase.setText(pregunta);
+			}
+		}
+
+		catch (ClassNotFoundException cnfe)
+		{
+			JOptionPane.showMessageDialog(null, "Error al cargar el driver", "Error", JOptionPane.ERROR_MESSAGE);
+		}
+		catch (SQLException sqle)
+		{
+			JOptionPane.showMessageDialog(null, "Se ha producido un error", "Error", JOptionPane.ERROR_MESSAGE);
+		}
+		desconectar();
+	}
+
+	public static String comprobarRespuesta() {
+		try
+		{
+			Class.forName(driver);
+			connection = DriverManager.getConnection(url, login, password);
+			statement = connection.createStatement();
+			sentencia = "SELECT respuestas FROM respuestas WHERE idRespuestas = 1;";
+			rs = statement.executeQuery(sentencia);
+			rs.next();
+			String respuesta = rs.getString("respuestas");
+			return respuesta;
+		}
+
+		catch (ClassNotFoundException cnfe)
+		{
+			JOptionPane.showMessageDialog(null, "Error al cargar el driver", "Error", JOptionPane.ERROR_MESSAGE);
+		}
+		catch (SQLException sqle)
+		{
+			JOptionPane.showMessageDialog(null, "Se ha producido un error", "Error", JOptionPane.ERROR_MESSAGE);
+		}
+		desconectar();
+		return null;
+	}
+
 	public static void desconectar() {
 		try
 		{
@@ -179,65 +245,10 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 		}
 		catch (SQLException se)
 		{
-			System.out.println("No se puede cerrar la conexión la Base De Datos");
+			JOptionPane.showMessageDialog(null, "No se puede cerrar la conexión con la Base de Datos", "Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
-	
-	public static void insertarPregunta(JLabel lblFrase) {
-		try
-		{
-			Class.forName(driver);
-			connection = DriverManager.getConnection(url, login, password);
-			statement = connection.createStatement();
-			sentencia = "SELECT preguntas FROM preguntas WHERE idPreguntas = 1;";
-			System.out.println(sentencia);
-			rs = statement.executeQuery(sentencia);
-			while (rs.next()) {
-				String pregunta = rs.getString("preguntas");
-				lblFrase.setText(pregunta);
-			}
-		}
-		
-		catch (ClassNotFoundException cnfe)
-		{
-			System.out.println("Error 1: "+cnfe.getMessage());
-		}
-		catch (SQLException sqle)
-		{
-			JOptionPane.showMessageDialog(null, "Se ha producido un error", "Error", JOptionPane.ERROR_MESSAGE);
-		}
-		desconectar();
-	}
-	
-	public static String comprobarRespuesta() {
-		try
-		{
-			Class.forName(driver);
-			connection = DriverManager.getConnection(url, login, password);
-			statement = connection.createStatement();
-			sentencia = "SELECT respuestas FROM respuestas WHERE idRespuestas = 1;";
-			System.out.println(sentencia);
-			rs = statement.executeQuery(sentencia);
-			rs.next();
-			
-			String respuesta = rs.getString("respuestas");
-			System.out.println(respuesta);
-			return respuesta;
-		}
-		
-		catch (ClassNotFoundException cnfe)
-		{
-			System.out.println("Error 1: "+cnfe.getMessage());
-		}
-		catch (SQLException sqle)
-		{
-			JOptionPane.showMessageDialog(null, "Se ha producido un error", "Error", JOptionPane.ERROR_MESSAGE);
-		}
-		desconectar();
-		
-		return null;
-	}
-	
+
 	@Override
 	public void actionPerformed(ActionEvent ae) {
 		String textofrase = btn1.getText();
@@ -266,22 +277,19 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 		if (btnCalificar.equals(ae.getSource())) {
 			if (textoFinal.equals(" " +comprobarRespuesta())) {
 				DialogoCorrecto.setVisible(true);
-				
+
 				try
 				{
 					Class.forName(driver);
 					connection = DriverManager.getConnection(url, login, password);
-					//Crear una sentencia
 					statement = connection.createStatement();
 					sentencia = "INSERT INTO jugador VALUES(NULL, '"+nombrejugador+"', 50, 1, 0);";
-					System.out.println(sentencia);
-					// Ejecutar la sentencia
 					statement.executeUpdate(sentencia);
 				}
-				
+
 				catch (ClassNotFoundException cnfe)
 				{
-					System.out.println("Error 1: "+cnfe.getMessage());
+					JOptionPane.showMessageDialog(null, "Error al cargar el driver", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 				catch (SQLException sqle)
 				{
@@ -289,29 +297,26 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 				}
 				desconectar();
 			}
-			
+
 			else{
 				DialogoIncorrecto.setVisible(true);
-				
+
 				try
 				{
 					Class.forName(driver);
 					connection = DriverManager.getConnection(url, login, password);
-					//Crear una sentencia
 					statement = connection.createStatement();
 					sentencia = "INSERT INTO jugador VALUES(NULL, '"+nombrejugador+"', 0, 0, 1);";
-					System.out.println(sentencia);
-					// Ejecutar la sentencia
 					statement.executeUpdate(sentencia);
 				}
-				
+
 				catch (ClassNotFoundException cnfe)
 				{
-					System.out.println("Error 1: "+cnfe.getMessage());
+					JOptionPane.showMessageDialog(null, "Error al cargar el driver", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 				catch (SQLException sqle)
 				{
-					JOptionPane.showMessageDialog(null, "Error", "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Error", "Error, por favor corrija los fallos", JOptionPane.ERROR_MESSAGE);
 				}
 				desconectar();
 			}
@@ -361,16 +366,10 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 		}
 	}
 
-	@Override
 	public void windowActivated(WindowEvent arg0) {}
-	@Override
 	public void windowClosed(WindowEvent arg0) {}
-	@Override
 	public void windowDeactivated(WindowEvent arg0) {}
-	@Override
 	public void windowDeiconified(WindowEvent arg0) {}
-	@Override
 	public void windowIconified(WindowEvent arg0) {}
-	@Override
 	public void windowOpened(WindowEvent arg0) {}
 }

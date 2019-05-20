@@ -30,21 +30,14 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 	JLabel lblSeleccionar = new JLabel("Seleccione la traducción correcta de esta frase");
 	JLabel lblFrase = new JLabel("");
 
-	// Botones
 	JButton btn1 = new JButton("Esta mañana no he desayunado");
 	JButton btn2 = new JButton("Hoy no he desayunado");
 	JButton btnCalificar = new JButton("Calificar");
 
-	// Panel Frase
+	// Paneles
 	JPanel pnlFrase = new JPanel();
-
-	// Panel para la primera frase
 	JPanel pnlBoton = new JPanel();
-
-	// Panel para la segunda frase
 	JPanel pnlBoton1 = new JPanel();
-
-	// Panel para el botón CALIFICAR
 	JPanel pnlCalificar = new JPanel();
 
 	// Diálogo Pregunta Correcta
@@ -73,7 +66,7 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 	static ResultSet rs = null;
 
 	String nombrejugador;
-	
+
 	Tablero2(String jugador)
 	{
 		nombrejugador = jugador;
@@ -155,7 +148,6 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 			connection = DriverManager.getConnection(url, login, password);
 			statement = connection.createStatement();
 			sentencia = "SELECT preguntas FROM preguntas WHERE idPreguntas = 2;";
-			System.out.println(sentencia);
 			rs = statement.executeQuery(sentencia);
 			while (rs.next()) {
 				String pregunta = rs.getString("preguntas");
@@ -165,7 +157,7 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 
 		catch (ClassNotFoundException cnfe)
 		{
-			System.out.println("Error 1: "+cnfe.getMessage());
+			JOptionPane.showMessageDialog(null, "Error al cargar el driver", "Error", JOptionPane.ERROR_MESSAGE);
 		}
 		catch (SQLException sqle)
 		{
@@ -193,30 +185,29 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 
 		if ((btn1.equals(ae.getSource())))
 		{
-			btnCalificar.doClick(500);
+			btnCalificar.doClick(200);
 		}
-		
+
 		else if (btnCalificar.equals(ae.getSource())) {
-			
+
 			String btn1text = btn1.getText();
-			
+
 			if (btn1text.equals(btn1text))
 			{
 				DialogoCorrecto.setVisible(true);
-				
+
 				try
 				{
 					Class.forName(driver);
 					connection = DriverManager.getConnection(url, login, password);
 					statement = connection.createStatement();
 					sentencia = "UPDATE jugador SET preguntas_Correctas= '2', puntos= '100' WHERE nombreJugador = '"+nombrejugador+"';";
-					System.out.println(sentencia);
 					statement.executeUpdate(sentencia);
 				}
-				
+
 				catch (ClassNotFoundException cnfe)
 				{
-					System.out.println("Error 1: "+cnfe.getMessage());
+					JOptionPane.showMessageDialog(null, "Error al cargar el driver", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 				catch (SQLException sqle)
 				{
@@ -224,23 +215,22 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 				}
 				desconectar();
 			}
-			
+
 			else {
 				DialogoIncorrecto.setVisible(true);
-				
+
 				try
 				{
 					Class.forName(driver);
 					connection = DriverManager.getConnection(url, login, password);
 					statement = connection.createStatement();
 					sentencia = "UPDATE jugador SET preguntas_Incorrectas= '2' WHERE nombreJugador = '"+nombrejugador+"';";
-					System.out.println(sentencia);
 					statement.executeUpdate(sentencia);
 				}
-				
+
 				catch (ClassNotFoundException cnfe)
 				{
-					System.out.println("Error 1: "+cnfe.getMessage());
+					JOptionPane.showMessageDialog(null, "Error al cargar el driver", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 				catch (SQLException sqle)
 				{
@@ -261,9 +251,7 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 		if (DialogoCorrecto.isActive()) {
 			DialogoCorrecto.setVisible(false);
 			new Tablero2(nombrejugador);
-		}
-		// Cuando se cierre el frame principal se abra el juego de nuevo
-		else if(NuevaPartida2.isActive()){
+		}else if(NuevaPartida2.isActive()){
 			NuevaPartida2.setVisible(false);
 			new Duolingo();
 		}else if(DialogoIncorrecto.isActive()){

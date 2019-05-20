@@ -17,6 +17,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class Duolingo extends JFrame implements WindowListener, ActionListener{
@@ -31,20 +32,15 @@ public class Duolingo extends JFrame implements WindowListener, ActionListener{
 	JMenu menuTopTen = new JMenu("Top Ten"); 
 	JMenu menuAyuda = new JMenu("Ayuda");
 
-	// SubMenús Nueva Partida
+	// Agregar MenuItem
 	JMenuItem menuNuevaPartidaNP = new JMenuItem("Nueva Partida");
-
-	// SubMenú TOPTEN
 	JMenuItem menuTopTen10 = new JMenuItem("Top Ten");
-
-	// SubMenú Ayuda
 	JMenuItem menuAyudaVer = new JMenuItem("Ver Ayuda");
 
 	Duolingo()
 	{
-		// Almacenamos en mipantalla el sistema nativo de pantallas, el tamaño por defecto de la pantalla
+		// Elemento ToolKit
 		Toolkit mipantalla = Toolkit.getDefaultToolkit();
-		// Poner título a nuestra ventana
 		setTitle("Duolingo");
 		// Agregar la barra de Menú
 		setJMenuBar(barraMenu);
@@ -56,12 +52,6 @@ public class Duolingo extends JFrame implements WindowListener, ActionListener{
 		menuNuevaPartida.add(menuNuevaPartidaNP);
 		menuTopTen.add(menuTopTen10);
 		menuAyuda.add(menuAyudaVer);
-		// Añadir WindowListener
-		addWindowListener(this);
-		setSize(400,300);
-		// Establecer el frame en el centro 
-		setLocationRelativeTo(null);
-		// Listener para abrir la clases
 		menuNuevaPartidaNP.addActionListener(this);
 		menuTopTen10.addActionListener(this);
 		menuAyudaVer.addActionListener(this);
@@ -79,6 +69,11 @@ public class Duolingo extends JFrame implements WindowListener, ActionListener{
 		LaminaConImagen lamina = new LaminaConImagen();
 		// Añadir la imagen
 		add(lamina);
+		setSize(400,300);
+		// Añadir WindowListener
+		addWindowListener(this);
+		// Establecer el frame en el centro 
+		setLocationRelativeTo(null);
 		// No permitir maximizar
 		setResizable(false);
 		// Hacer visible el frame
@@ -95,13 +90,11 @@ public class Duolingo extends JFrame implements WindowListener, ActionListener{
 			// Especificar imagen
 			File miImagen = new File("src//duolingo2.png") ;
 
-			// Intentar leer la imagen
 			try {
 				imagen = ImageIO.read(miImagen);
 			}
-			// Si no la encuentra que salte el error y muestre por pantalla un mensaje
 			catch(IOException e){
-				System.out.println("La imagen no se encuentra");
+				JOptionPane.showMessageDialog(null, "Error", "La imagen no se encuentra", JOptionPane.ERROR_MESSAGE);
 			}
 
 			// Dibujar la imagen con los siguientes tamaños
@@ -116,22 +109,16 @@ public class Duolingo extends JFrame implements WindowListener, ActionListener{
 	}
 
 	@Override
-	public void windowActivated(WindowEvent arg0) {}
-	@Override
-	public void windowClosed(WindowEvent arg0) {}
-	@Override
 	public void windowClosing(WindowEvent arg0) {
 		// Método para cerrar la ventana al pulsar el botón cerrar
 		System.exit(0);
 	}
-
-	@Override
+	
+	public void windowActivated(WindowEvent arg0) {}
+	public void windowClosed(WindowEvent arg0) {}
 	public void windowDeactivated(WindowEvent arg0) {}
-	@Override
 	public void windowDeiconified(WindowEvent arg0) {}
-	@Override
 	public void windowIconified(WindowEvent arg0) {}
-	@Override
 	public void windowOpened(WindowEvent arg0) {}
 
 	@Override
@@ -195,9 +182,7 @@ public class Duolingo extends JFrame implements WindowListener, ActionListener{
 			}
 		}
 
-		@Override
 		public void keyReleased(KeyEvent e) {}
-		@Override
 		public void keyTyped(KeyEvent e) {}
 	}
 }
