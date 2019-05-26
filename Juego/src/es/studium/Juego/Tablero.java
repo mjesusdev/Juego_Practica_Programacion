@@ -1,6 +1,5 @@
 package es.studium.Juego;
 
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -15,7 +14,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -58,26 +56,6 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 	// Panel para el botón Calificar
 	JPanel pnlBotonC = new JPanel();
 
-	// Diálogo Pregunta Correcta
-	JDialog DialogoCorrecto = new JDialog(this, true);
-
-	// Diálogo Pregunta Incorrecta
-	JDialog DialogoIncorrecto = new JDialog(this, true);
-
-	// Componentes Diálogo Correcto
-	JLabel lblPuntos = new JLabel("Has conseguido 50 puntos");
-	JButton btnVolver = new JButton("Volver");
-	JButton btnNuevaPartida = new JButton("Nueva Partida");
-
-	// Componentes Diálogo Incorrecto
-	JLabel lblError = new JLabel("Has fallado, inténtelo de nuevo!");
-	JButton btnVolver1 = new JButton("Volver");
-	JButton btnNuevaPartida1 = new JButton("Nueva Partida");
-
-	// Paneles para Diálogo Incorrecto
-	JPanel pnlFallar = new JPanel();
-	JPanel pnlBotonesIn = new JPanel();
-
 	// BD
 	static String driver = "com.mysql.jdbc.Driver";
 	static String url = "jdbc:mysql://localhost:3306/duolingobd?autoReconnect=true&useSSL=false";
@@ -93,11 +71,9 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 	Tablero(String jugador)
 	{
 		nombrejugador = jugador;
-		// Almacenamos en mipantalla el sistema nativo de pantallas, el tamaño por defecto de la pantalla
-		Toolkit mipantalla = Toolkit.getDefaultToolkit();
-
 		// Título
 		setTitle("Tablero");
+		insertarIcono();
 
 		// Añadir al Panel frase la frase
 		pnl1.add(lbl1);
@@ -128,31 +104,6 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 		add(pnlBotones2, "Center");
 		add(pnlBotonC, "South");
 
-		// Diálogo Correcto
-		DialogoCorrecto.setTitle("Pregunta Correcta");
-		DialogoCorrecto.setLayout(new FlowLayout());
-		DialogoCorrecto.add(lblPuntos);
-		DialogoCorrecto.add(btnVolver);
-		DialogoCorrecto.add(btnNuevaPartida);
-		DialogoCorrecto.setSize(200,100);
-		DialogoCorrecto.setLocationRelativeTo(null);
-		DialogoCorrecto.setResizable(false);
-		DialogoCorrecto.setVisible(false);
-
-		// Diálogo Incorrecto
-		DialogoIncorrecto.setTitle("Pregunta Incorrecta");
-		pnlFallar.add(lblError, "North");
-		pnlBotonesIn.add(btnVolver1);
-		pnlBotonesIn.add(btnNuevaPartida1);
-		DialogoIncorrecto.setSize(250,100);
-		DialogoIncorrecto.setLocationRelativeTo(null);
-		DialogoIncorrecto.setResizable(false);
-		DialogoIncorrecto.setVisible(false);
-
-		// Ubicación Paneles Diálogo Incorrecto
-		DialogoIncorrecto.add(pnlFallar, "North");
-		DialogoIncorrecto.add(pnlBotonesIn, "Center");
-
 		// Añadir los listeners 
 		addWindowListener(this);
 		btn1.addActionListener(this);
@@ -162,27 +113,18 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 		btnCalificar.addActionListener(this);
 		btnLimpiar.addActionListener(this);
 
-		// Listeners del Diálogo Correcto
-		btnVolver.addActionListener(this);
-		btnNuevaPartida.addActionListener(this);
-		DialogoCorrecto.addWindowListener(this);
-
-		// Listeners del Diálogo Pregunta Incorrecta
-		btnVolver1.addActionListener(this);
-		btnNuevaPartida1.addActionListener(this);
-		DialogoIncorrecto.addWindowListener(this);
-
-		// Establecer un icono a la aplicación
-		Image miIcono = mipantalla.getImage("src//duo.png");
-		// Colocar icono
-		setIconImage(miIcono);
-
 		// Aplicar Layout
 		setLayout(new GridLayout(6,2,5,5));
 		setSize(400,350);
 		setLocationRelativeTo(null);
 		setResizable(false);
 		setVisible(true);
+	}
+
+	public void insertarIcono() {
+		Toolkit mipantalla = Toolkit.getDefaultToolkit();
+		Image miIcono = mipantalla.getImage("src//duo.png");
+		setIconImage(miIcono);
 	}
 
 	public static void insertarPregunta(JLabel lblFrase) {
@@ -276,7 +218,19 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 
 		if (btnCalificar.equals(ae.getSource())) {
 			if (textoFinal.equals(" " +comprobarRespuesta())) {
-				DialogoCorrecto.setVisible(true);
+				int seleccion = JOptionPane.showOptionDialog(
+						this,
+						"Ha ganado 50 puntos por acertar la pregunta, pulse que desea hacer", 
+						"Seleccione que desea realizar",
+						JOptionPane.YES_NO_CANCEL_OPTION,
+						JOptionPane.QUESTION_MESSAGE,
+						null, new Object[] { "Nueva Partida", "Volver a la partida actual"},
+						"opcion 1");
+
+				if (seleccion==0) {
+					new Tablero2(nombrejugador);
+					this.setVisible(false);
+				}	
 
 				try
 				{
@@ -299,7 +253,19 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 			}
 
 			else{
-				DialogoIncorrecto.setVisible(true);
+				int seleccion = JOptionPane.showOptionDialog(
+						this,
+						"Ha perdido esta pregunta, no se decaiga hombre", 
+						"Seleccione que desea realizar",
+						JOptionPane.YES_NO_CANCEL_OPTION,
+						JOptionPane.ERROR_MESSAGE,
+						null, new Object[] { "Nueva Partida", "Volver a la partida actual"},
+						"opcion 1");
+
+				if (seleccion==0) {
+					new Tablero2(nombrejugador);
+					this.setVisible(false);
+				}	
 
 				try
 				{
@@ -325,42 +291,11 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 		else if (btnLimpiar.equals(ae.getSource())) {
 			txtFrase.setText("");
 		}
-
-		else if (btnVolver.equals(ae.getSource())) {
-			DialogoCorrecto.setVisible(false);
-			setVisible(true);
-		}
-
-		else if (btnVolver1.equals(ae.getSource())) {
-			DialogoIncorrecto.setVisible(false);
-			setVisible(true);
-		}
-
-		else if (btnNuevaPartida.equals(ae.getSource())) {
-			DialogoCorrecto.setVisible(false);
-			setVisible(false);
-			new Tablero2(nombrejugador);
-		}
-
-		else if (btnNuevaPartida1.equals(ae.getSource())) {
-			DialogoIncorrecto.setVisible(false);
-			setVisible(false);
-			new Tablero2(nombrejugador);
-		}
 	}
 
 	@Override
 	public void windowClosing(WindowEvent arg0) {	
-		if (DialogoCorrecto.isActive()) {
-			DialogoCorrecto.setVisible(false);
-			setVisible(true);
-		}
-		else if(DialogoIncorrecto.isActive()) {
-			DialogoIncorrecto.setVisible(false);
-			setVisible(true);
-		}
-
-		else if (this.isActive()){
+		if (this.isActive()){
 			this.setVisible(false);
 			new Duolingo();
 		}

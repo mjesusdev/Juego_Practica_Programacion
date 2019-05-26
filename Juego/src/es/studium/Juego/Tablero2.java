@@ -1,7 +1,6 @@
 package es.studium.Juego;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -16,7 +15,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -31,7 +29,7 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 	JLabel lblFrase = new JLabel("");
 
 	JButton btn1 = new JButton("Esta mañana no he desayunado");
-	JButton btn2 = new JButton("Hoy no he desayunado");
+	JButton btn2 = new JButton();
 	JButton btnCalificar = new JButton("Calificar");
 
 	// Paneles
@@ -39,21 +37,6 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 	JPanel pnlBoton = new JPanel();
 	JPanel pnlBoton1 = new JPanel();
 	JPanel pnlCalificar = new JPanel();
-
-	// Diálogo Pregunta Correcta
-	JDialog DialogoCorrecto = new JDialog(NuevaPartida2, false);
-
-	// Diálogo Pregunta Incorrecta
-	JDialog DialogoIncorrecto = new JDialog(NuevaPartida2, false);
-
-	// Componentes Diálogo Correcto
-	JLabel lblPuntos = new JLabel("Has obtenido 50 puntos");
-	JButton btnVolver = new JButton("Volver");
-	JButton btnNuevaPartida = new JButton("Nueva Partida");
-
-	// Componentes Diálogo Incorrecto
-	JLabel lblError = new JLabel("Has fallado, inténtelo de nuevo");
-	JButton btnNuevaPartida1 = new JButton("Nueva Partida");
 
 	// BD
 	static String driver = "com.mysql.jdbc.Driver";
@@ -69,6 +52,7 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 
 	Tablero2(String jugador)
 	{
+		colocarIcono();
 		nombrejugador = jugador;
 		// Aplicar Layout
 		NuevaPartida2.setLayout(new GridLayout(5,2));
@@ -81,9 +65,11 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 		// Añadir la primera frase y la segunda a los paneles boton y boton2
 		pnlBoton.add(btn1);
 		pnlBoton1.add(btn2);
+		insertarRespuestas();
 
 		// Añadir al panel BotonC
 		pnlCalificar.add(btnCalificar);
+		btnCalificar.setEnabled(false);
 
 		// Ubicación de los paneles
 		NuevaPartida2.add(pnlFrase, BorderLayout.NORTH);
@@ -91,43 +77,11 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 		NuevaPartida2.add(pnlBoton1, BorderLayout.CENTER);
 		NuevaPartida2.add(pnlCalificar, BorderLayout.SOUTH);
 
-		// Diálogo Correcto
-		DialogoCorrecto.setTitle("Pregunta Correcta");
-		DialogoCorrecto.setLayout(new FlowLayout());
-		DialogoCorrecto.add(lblPuntos);
-		DialogoCorrecto.add(btnVolver);
-		DialogoCorrecto.add(btnNuevaPartida);
-		DialogoCorrecto.setSize(210,100);
-		DialogoCorrecto.setLocationRelativeTo(null);
-		DialogoCorrecto.setResizable(false);
-		DialogoCorrecto.setVisible(false);
-
-		// Diálogo Incorrecto
-		DialogoIncorrecto.setTitle("Pregunta Incorrecta");
-		DialogoIncorrecto.setLayout(new FlowLayout());
-		DialogoIncorrecto.add(lblError);
-		DialogoIncorrecto.add(btnNuevaPartida1);
-		DialogoIncorrecto.setSize(210,100);
-		DialogoIncorrecto.setLocationRelativeTo(null);
-		DialogoIncorrecto.setResizable(false);
-		DialogoIncorrecto.setVisible(false);
-
 		// Añadir los listeners 
 		NuevaPartida2.addWindowListener(this);
 		btn1.addActionListener(this);
 		btn2.addActionListener(this);
 		btnCalificar.addActionListener(this);
-
-		// Listeners del Diálogo Correcto
-		btnVolver.addActionListener(this);
-		btnNuevaPartida.addActionListener(this);
-		DialogoCorrecto.addWindowListener(this);
-
-		// Listeners del Diálogo Pregunta Incorrecta
-		btnNuevaPartida1.addActionListener(this);
-		DialogoIncorrecto.addWindowListener(this);
-
-		colocarIcono();
 
 		NuevaPartida2.setSize(400,250);
 		NuevaPartida2.setLocationRelativeTo(null);
@@ -166,6 +120,31 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 		desconectar();
 	}
 
+	public void insertarRespuestas() {
+		try
+		{
+			Class.forName(driver);
+			connection = DriverManager.getConnection(url, login, password);
+			statement = connection.createStatement();
+			sentencia = "SELECT respuestas FROM respuestas WHERE idPreguntasFK = 2;";
+			rs = statement.executeQuery(sentencia);
+			while (rs.next()) {
+				String respuestas = rs.getString("respuestas");
+				btn2.setText(respuestas);
+			}
+		}
+
+		catch (ClassNotFoundException cnfe)
+		{
+			JOptionPane.showMessageDialog(null, "Error al cargar el driver", "Error", JOptionPane.ERROR_MESSAGE);
+		}
+		catch (SQLException sqle)
+		{
+			JOptionPane.showMessageDialog(null, "Se ha producido un error", "Error", JOptionPane.ERROR_MESSAGE);
+		}
+		desconectar();
+	}
+
 	public static void desconectar() {
 		try
 		{
@@ -176,86 +155,104 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 		}
 		catch (SQLException se)
 		{
-			System.out.println("No se puede cerrar la conexión la Base De Datos");
+			JOptionPane.showMessageDialog(null, "No se puede cerrar la conexión con la BD", "Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent ae) {
-
+		Object ok = ae.getSource();
+		
 		if ((btn1.equals(ae.getSource())))
 		{
-			btnCalificar.doClick(200);
+			btnCalificar.setEnabled(true);
+		}
+
+		else if (btn2.equals(ae.getSource()))
+		{
+			btnCalificar.setEnabled(true);
 		}
 
 		else if (btnCalificar.equals(ae.getSource())) {
+			if (ok.equals(btn1.equals(ae.getSource()))) {
+				System.out.println("hola aja");
+			}
+			
+			int seleccion = JOptionPane.showOptionDialog(
+					NuevaPartida2,
+					"Ha ganado la partida, ¡bien hecho!", 
+					"Seleccione que desea realizar",
+					JOptionPane.YES_NO_CANCEL_OPTION,
+					JOptionPane.ERROR_MESSAGE,
+					null, new Object[] { "Iniciar de nuevo la primera partida", "Volver a la partida actual"},
+					"opcion 1");
 
-			String btn1text = btn1.getText();
+			if (seleccion==0) {
+				new Tablero(nombrejugador);
+				NuevaPartida2.setVisible(false);
+			}	
 
-			if (btn1text.equals(btn1text))
+			try
 			{
-				DialogoCorrecto.setVisible(true);
-
-				try
-				{
-					Class.forName(driver);
-					connection = DriverManager.getConnection(url, login, password);
-					statement = connection.createStatement();
-					sentencia = "UPDATE jugador SET preguntas_Correctas= '2', puntos= '100' WHERE nombreJugador = '"+nombrejugador+"';";
-					statement.executeUpdate(sentencia);
-				}
-
-				catch (ClassNotFoundException cnfe)
-				{
-					JOptionPane.showMessageDialog(null, "Error al cargar el driver", "Error", JOptionPane.ERROR_MESSAGE);
-				}
-				catch (SQLException sqle)
-				{
-					JOptionPane.showMessageDialog(null, "Se ha producido un error", "Error", JOptionPane.ERROR_MESSAGE);
-				}
-				desconectar();
+				Class.forName(driver);
+				connection = DriverManager.getConnection(url, login, password);
+				statement = connection.createStatement();
+				sentencia = "UPDATE jugador SET preguntas_Correctas= '2', puntos= '100' WHERE nombreJugador = '"+nombrejugador+"';";
+				statement.executeUpdate(sentencia);
 			}
 
-			else {
-				DialogoIncorrecto.setVisible(true);
-
-				try
-				{
-					Class.forName(driver);
-					connection = DriverManager.getConnection(url, login, password);
-					statement = connection.createStatement();
-					sentencia = "UPDATE jugador SET preguntas_Incorrectas= '2' WHERE nombreJugador = '"+nombrejugador+"';";
-					statement.executeUpdate(sentencia);
-				}
-
-				catch (ClassNotFoundException cnfe)
-				{
-					JOptionPane.showMessageDialog(null, "Error al cargar el driver", "Error", JOptionPane.ERROR_MESSAGE);
-				}
-				catch (SQLException sqle)
-				{
-					JOptionPane.showMessageDialog(null, "Se ha producido un error", "Error", JOptionPane.ERROR_MESSAGE);
-				}
-				desconectar();
+			catch (ClassNotFoundException cnfe)
+			{
+				JOptionPane.showMessageDialog(null, "Error al cargar el driver", "Error", JOptionPane.ERROR_MESSAGE);
 			}
+			catch (SQLException sqle)
+			{
+				JOptionPane.showMessageDialog(null, "Se ha producido un error", "Error", JOptionPane.ERROR_MESSAGE);
+			}
+			desconectar();
 		}
 
-		else if (btnVolver.equals(ae.getSource())) {
-			NuevaPartida2.setVisible(false);
-			new Duolingo();
+		else {
+			int seleccion = JOptionPane.showOptionDialog(
+					NuevaPartida2,
+					"Ha perdido esta pregunta, no se decaiga hombre, juegue de nuevo", 
+					"Seleccione que desea realizar",
+					JOptionPane.YES_NO_CANCEL_OPTION,
+					JOptionPane.ERROR_MESSAGE,
+					null, new Object[] { "Iniciar de nuevo la primera partida", "Volver a la partida actual"},
+					"opcion 1");
+
+			if (seleccion==0) {
+				new Tablero3(nombrejugador);
+				NuevaPartida2.setVisible(false);
+			}	
+
+			try
+			{
+				Class.forName(driver);
+				connection = DriverManager.getConnection(url, login, password);
+				statement = connection.createStatement();
+				sentencia = "UPDATE jugador SET preguntas_Incorrectas= '2' WHERE nombreJugador = '"+nombrejugador+"';";
+				statement.executeUpdate(sentencia);
+			}
+
+			catch (ClassNotFoundException cnfe)
+			{
+				JOptionPane.showMessageDialog(null, "Error al cargar el driver", "Error", JOptionPane.ERROR_MESSAGE);
+			}
+			catch (SQLException sqle)
+			{
+				JOptionPane.showMessageDialog(null, "Se ha producido un error", "Error", JOptionPane.ERROR_MESSAGE);
+			}
+			desconectar();
 		}
 	}
 
-	@Override
-	public void windowClosing(WindowEvent arg0) {	
-		if (DialogoCorrecto.isActive()) {
-			DialogoCorrecto.setVisible(false);
-			new Tablero2(nombrejugador);
-		}else if(NuevaPartida2.isActive()){
-			NuevaPartida2.setVisible(false);
-			new Duolingo();
-		}else if(DialogoIncorrecto.isActive()){
-			NuevaPartida2.setVisible(true);
-		}
+@Override
+public void windowClosing(WindowEvent arg0) {	
+	if(NuevaPartida2.isActive()){
+		NuevaPartida2.setVisible(false);
+		new Duolingo();
 	}
+}
 }
