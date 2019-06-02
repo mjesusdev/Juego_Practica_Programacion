@@ -45,7 +45,7 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 	static String password = "Studium2018;";
 	static String sentencia = null;
 	static Connection connection = null;
-	static Statement statement = null;
+	Statement statement = null;
 	static ResultSet rs = null;
 
 	String nombrejugador;
@@ -70,6 +70,12 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 		// Añadir al panel BotonC
 		pnlCalificar.add(btnCalificar);
 		btnCalificar.setEnabled(false);
+		//try {
+			//sacaridJugador();
+		//} //catch (ClassNotFoundException | SQLException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+		//}
 
 		// Ubicación de los paneles
 		NuevaPartida2.add(pnlFrase, BorderLayout.NORTH);
@@ -145,6 +151,29 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 		desconectar();
 	}
 
+	public int sacaridJugador() throws ClassNotFoundException, SQLException{
+		Class.forName(driver);
+		connection = DriverManager.getConnection(url, login, password);
+		statement = connection.createStatement();
+		sentencia = "SELECT idJugador FROM jugador WHERE nombreJugador = '"+nombrejugador+"';";
+		rs = statement.executeQuery(sentencia);
+		rs.next();
+		int idJugador = rs.getInt("idJugador");
+		try
+		{
+			if(connection!=null)
+			{
+				connection.close();
+			}
+		}
+		catch (SQLException se)
+		{
+			JOptionPane.showMessageDialog(null, "No se puede cerrar la conexión con la BD", "Error", JOptionPane.ERROR_MESSAGE);
+		}
+		return idJugador;
+		
+	}
+
 	public static void desconectar() {
 		try
 		{
@@ -161,23 +190,10 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent ae) {
-		Object ok = ae.getSource();
-		
-		if ((btn1.equals(ae.getSource())))
-		{
-			btnCalificar.setEnabled(true);
-		}
+		if (btn1.equals(ae.getSource()))
+		{	
+			//btnCalificar.doClick();
 
-		else if (btn2.equals(ae.getSource()))
-		{
-			btnCalificar.setEnabled(true);
-		}
-
-		else if (btnCalificar.equals(ae.getSource())) {
-			if (ok.equals(btn1.equals(ae.getSource()))) {
-				System.out.println("hola aja");
-			}
-			
 			int seleccion = JOptionPane.showOptionDialog(
 					NuevaPartida2,
 					"Ha ganado la partida, ¡bien hecho!", 
@@ -196,9 +212,10 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 			{
 				Class.forName(driver);
 				connection = DriverManager.getConnection(url, login, password);
-				statement = connection.createStatement();
-				sentencia = "UPDATE jugador SET preguntas_Correctas= '2', puntos= '100' WHERE nombreJugador = '"+nombrejugador+"';";
+				statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_READ_ONLY);
+				sentencia = "UPDATE jugador SET preguntas_Correctas= '2', puntos= '100' WHERE idJugador = "+sacaridJugador()+";";
 				statement.executeUpdate(sentencia);
+				statement.close();
 			}
 
 			catch (ClassNotFoundException cnfe)
@@ -208,11 +225,14 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 			catch (SQLException sqle)
 			{
 				JOptionPane.showMessageDialog(null, "Se ha producido un error", "Error", JOptionPane.ERROR_MESSAGE);
+				sqle.printStackTrace();
 			}
 			desconectar();
 		}
-
-		else {
+		
+		else if (btn2.equals(ae.getSource()))
+		{
+			btnCalificar.doClick();
 			int seleccion = JOptionPane.showOptionDialog(
 					NuevaPartida2,
 					"Ha perdido esta pregunta, no se decaiga hombre, juegue de nuevo", 
@@ -232,7 +252,7 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 				Class.forName(driver);
 				connection = DriverManager.getConnection(url, login, password);
 				statement = connection.createStatement();
-				sentencia = "UPDATE jugador SET preguntas_Incorrectas= '2' WHERE nombreJugador = '"+nombrejugador+"';";
+				sentencia = "UPDATE jugador SET preguntas_Incorrectas= '2' WHERE nombreJugador = '"+sacaridJugador()+"';";
 				statement.executeUpdate(sentencia);
 			}
 
@@ -248,11 +268,11 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 		}
 	}
 
-@Override
-public void windowClosing(WindowEvent arg0) {	
-	if(NuevaPartida2.isActive()){
-		NuevaPartida2.setVisible(false);
-		new Duolingo();
+	@Override
+	public void windowClosing(WindowEvent arg0) {	
+		if(NuevaPartida2.isActive()){
+			NuevaPartida2.setVisible(false);
+			new Duolingo();
+		}
 	}
-}
 }
