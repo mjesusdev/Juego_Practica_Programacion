@@ -39,14 +39,14 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 	JPanel pnlCalificar = new JPanel();
 
 	// BD
-	static String driver = "com.mysql.jdbc.Driver";
-	static String url = "jdbc:mysql://localhost:3306/duolingobd?autoReconnect=true&useSSL=false";
-	static String login = "root";
-	static String password = "Studium2018;";
-	static String sentencia = null;
+	String driver = "com.mysql.jdbc.Driver";
+	String url = "jdbc:mysql://localhost:3306/duolingobd?autoReconnect=true&useSSL=false";
+	String login = "root";
+	String password = "Studium2018;";
+	String sentencia = null;
 	static Connection connection = null;
 	Statement statement = null;
-	static ResultSet rs = null;
+	ResultSet rs = null;
 
 	String nombrejugador;
 
@@ -159,19 +159,8 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 		rs = statement.executeQuery(sentencia);
 		rs.next();
 		int idJugador = rs.getInt("idJugador");
-		try
-		{
-			if(connection!=null)
-			{
-				connection.close();
-			}
-		}
-		catch (SQLException se)
-		{
-			JOptionPane.showMessageDialog(null, "No se puede cerrar la conexión con la BD", "Error", JOptionPane.ERROR_MESSAGE);
-		}
+		desconectar();
 		return idJugador;
-		
 	}
 
 	public static void desconectar() {
@@ -213,9 +202,7 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 				Class.forName(driver);
 				connection = DriverManager.getConnection(url, login, password);
 				statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_READ_ONLY);
-				sentencia = "UPDATE jugador SET preguntas_Correctas= '2', puntos= '100' WHERE idJugador = "+sacaridJugador()+";";
-				statement.executeUpdate(sentencia);
-				statement.close();
+				statement.executeUpdate("UPDATE jugador SET preguntas_Correctas= '2', puntos= '100' WHERE idJugador = "+sacaridJugador()+";");
 			}
 
 			catch (ClassNotFoundException cnfe)
@@ -225,7 +212,6 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 			catch (SQLException sqle)
 			{
 				JOptionPane.showMessageDialog(null, "Se ha producido un error", "Error", JOptionPane.ERROR_MESSAGE);
-				sqle.printStackTrace();
 			}
 			desconectar();
 		}
@@ -252,8 +238,7 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 				Class.forName(driver);
 				connection = DriverManager.getConnection(url, login, password);
 				statement = connection.createStatement();
-				sentencia = "UPDATE jugador SET preguntas_Incorrectas= '2' WHERE nombreJugador = '"+sacaridJugador()+"';";
-				statement.executeUpdate(sentencia);
+				statement.executeUpdate("UPDATE jugador SET preguntas_Incorrectas= '2' WHERE nombreJugador = '"+sacaridJugador()+"';");
 			}
 
 			catch (ClassNotFoundException cnfe)
