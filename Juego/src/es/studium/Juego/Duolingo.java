@@ -31,10 +31,10 @@ public class Duolingo extends JFrame implements WindowListener, ActionListener{
 	JMenu menuNuevaPartida = new JMenu("Nueva Partida");
 	JMenu menuTopTen = new JMenu("Top Ten"); 
 	JMenu menuAyuda = new JMenu("Ayuda");
-
+	
 	// Agregar MenuItem
-	JMenuItem menuNuevaPartidaNP = new JMenuItem("Nueva Partida");
-	JMenuItem menuTopTen10 = new JMenuItem("Top Ten");
+	JMenuItem menuNuevaPartidaNP = new JMenuItem("Iniciar Nueva Partida");
+	JMenuItem menuTopTen10 = new JMenuItem("Ver Top Ten");
 	JMenuItem menuAyudaVer = new JMenuItem("Ver Ayuda");
 
 	Duolingo()
@@ -48,6 +48,7 @@ public class Duolingo extends JFrame implements WindowListener, ActionListener{
 		barraMenu.add(menuNuevaPartida);
 		barraMenu.add(menuTopTen);
 		barraMenu.add(menuAyuda);
+		
 		// Añadir a los menús los submenús
 		menuNuevaPartida.add(menuNuevaPartidaNP);
 		menuTopTen.add(menuTopTen10);
@@ -98,7 +99,7 @@ public class Duolingo extends JFrame implements WindowListener, ActionListener{
 			}
 
 			// Dibujar la imagen con los siguientes tamaños
-			g.drawImage(imagen, 80, 70, 250, 120, null);
+			g.drawImage(imagen, 65, 55, 270, 140, null);
 		}
 
 		private Image imagen;

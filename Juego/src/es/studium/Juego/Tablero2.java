@@ -49,6 +49,7 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 	ResultSet rs = null;
 
 	String nombrejugador;
+	int btn1click = 1;
 
 	Tablero2(String jugador)
 	{
@@ -70,12 +71,6 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 		// Añadir al panel BotonC
 		pnlCalificar.add(btnCalificar);
 		btnCalificar.setEnabled(false);
-		//try {
-			//sacaridJugador();
-		//} //catch (ClassNotFoundException | SQLException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-		//}
 
 		// Ubicación de los paneles
 		NuevaPartida2.add(pnlFrase, BorderLayout.NORTH);
@@ -181,75 +176,88 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 	public void actionPerformed(ActionEvent ae) {
 		if (btn1.equals(ae.getSource()))
 		{	
-			//btnCalificar.doClick();
-
-			int seleccion = JOptionPane.showOptionDialog(
-					NuevaPartida2,
-					"Ha ganado la partida, ¡bien hecho!", 
-					"Seleccione que desea realizar",
-					JOptionPane.YES_NO_CANCEL_OPTION,
-					JOptionPane.ERROR_MESSAGE,
-					null, new Object[] { "Iniciar de nuevo la primera partida", "Volver a la partida actual"},
-					"opcion 1");
-
-			if (seleccion==0) {
-				new Tablero(nombrejugador);
-				NuevaPartida2.setVisible(false);
-			}	
-
-			try
-			{
-				Class.forName(driver);
-				connection = DriverManager.getConnection(url, login, password);
-				statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_READ_ONLY);
-				statement.executeUpdate("UPDATE jugador SET preguntas_Correctas= '2', puntos= '100' WHERE idJugador = "+sacaridJugador()+";");
-			}
-
-			catch (ClassNotFoundException cnfe)
-			{
-				JOptionPane.showMessageDialog(null, "Error al cargar el driver", "Error", JOptionPane.ERROR_MESSAGE);
-			}
-			catch (SQLException sqle)
-			{
-				JOptionPane.showMessageDialog(null, "Se ha producido un error", "Error", JOptionPane.ERROR_MESSAGE);
-			}
-			desconectar();
+			btnCalificar.setEnabled(true);
 		}
-		
+
 		else if (btn2.equals(ae.getSource()))
 		{
-			btnCalificar.doClick();
-			int seleccion = JOptionPane.showOptionDialog(
-					NuevaPartida2,
-					"Ha perdido esta pregunta, no se decaiga hombre, juegue de nuevo", 
-					"Seleccione que desea realizar",
-					JOptionPane.YES_NO_CANCEL_OPTION,
-					JOptionPane.ERROR_MESSAGE,
-					null, new Object[] { "Iniciar de nuevo la primera partida", "Volver a la partida actual"},
-					"opcion 1");
+			btnCalificar.setEnabled(true);
+		}
 
-			if (seleccion==0) {
-				new Tablero3(nombrejugador);
-				NuevaPartida2.setVisible(false);
-			}	
+		else if(btnCalificar.equals(ae.getSource())) {
+			if (btn1click==1) 
+			{
+				btn1click++;
+				int seleccion = JOptionPane.showOptionDialog(
+						NuevaPartida2,
+						"Ha ganado la partida, ¡bien hecho!", 
+						"Seleccione que desea realizar",
+						JOptionPane.YES_NO_CANCEL_OPTION,
+						JOptionPane.INFORMATION_MESSAGE,
+						null, new Object[] { "Volver al menú principal del Juego", "Iniciar nueva partida"},
+						"opcion 1");
 
-			try
-			{
-				Class.forName(driver);
-				connection = DriverManager.getConnection(url, login, password);
-				statement = connection.createStatement();
-				statement.executeUpdate("UPDATE jugador SET preguntas_Incorrectas= '2' WHERE nombreJugador = '"+sacaridJugador()+"';");
-			}
+				if (seleccion==0) {
+					new Duolingo();
+					NuevaPartida2.dispose();
+				}else {
+					new Tablero(nombrejugador);
+					NuevaPartida2.dispose();
+				}
 
-			catch (ClassNotFoundException cnfe)
-			{
-				JOptionPane.showMessageDialog(null, "Error al cargar el driver", "Error", JOptionPane.ERROR_MESSAGE);
+				try
+				{
+					Class.forName(driver);
+					connection = DriverManager.getConnection(url, login, password);
+					statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_READ_ONLY);
+					statement.executeUpdate("UPDATE jugador SET preguntas_Correctas= '2', puntos= '100' WHERE idJugador = "+sacaridJugador()+";");
+				}
+
+				catch (ClassNotFoundException cnfe)
+				{
+					JOptionPane.showMessageDialog(null, "Error al cargar el driver", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+				catch (SQLException sqle)
+				{
+					JOptionPane.showMessageDialog(null, "Se ha producido un error", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+				desconectar();
+			}else if(btn1click!=1){
+				int seleccion = JOptionPane.showOptionDialog(
+						NuevaPartida2,
+						"Ha perdido esta pregunta, no se decaiga hombre, juegue de nuevo", 
+						"Seleccione que desea realizar",
+						JOptionPane.YES_NO_CANCEL_OPTION,
+						JOptionPane.ERROR_MESSAGE,
+						null, new Object[] { "Volver al menú principal del Juego", "Iniciar nueva partida"},
+						"opcion 1");
+
+				if (seleccion==0) {
+					new Duolingo();
+					NuevaPartida2.dispose();
+				}else {
+					new Tablero(nombrejugador);
+					NuevaPartida2.dispose();
+				}
+
+				try
+				{
+					Class.forName(driver);
+					connection = DriverManager.getConnection(url, login, password);
+					statement = connection.createStatement();
+					statement.executeUpdate("UPDATE jugador SET preguntas_Incorrectas= '2' WHERE nombreJugador = '"+sacaridJugador()+"';");
+				}
+
+				catch (ClassNotFoundException cnfe)
+				{
+					JOptionPane.showMessageDialog(null, "Error al cargar el driver", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+				catch (SQLException sqle)
+				{
+					JOptionPane.showMessageDialog(null, "Se ha producido un error", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+				desconectar();
 			}
-			catch (SQLException sqle)
-			{
-				JOptionPane.showMessageDialog(null, "Se ha producido un error", "Error", JOptionPane.ERROR_MESSAGE);
-			}
-			desconectar();
 		}
 	}
 
