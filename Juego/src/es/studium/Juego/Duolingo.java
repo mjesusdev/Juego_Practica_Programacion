@@ -31,7 +31,7 @@ public class Duolingo extends JFrame implements WindowListener, ActionListener{
 	JMenu menuNuevaPartida = new JMenu("Nueva Partida");
 	JMenu menuTopTen = new JMenu("Top Ten"); 
 	JMenu menuAyuda = new JMenu("Ayuda");
-	
+
 	// Agregar MenuItem
 	JMenuItem menuNuevaPartidaNP = new JMenuItem("Iniciar Nueva Partida");
 	JMenuItem menuTopTen10 = new JMenuItem("Ver Top Ten");
@@ -48,7 +48,7 @@ public class Duolingo extends JFrame implements WindowListener, ActionListener{
 		barraMenu.add(menuNuevaPartida);
 		barraMenu.add(menuTopTen);
 		barraMenu.add(menuAyuda);
-		
+
 		// Añadir a los menús los submenús
 		menuNuevaPartida.add(menuNuevaPartidaNP);
 		menuTopTen.add(menuTopTen10);
@@ -65,7 +65,7 @@ public class Duolingo extends JFrame implements WindowListener, ActionListener{
 		Image miIcono = mipantalla.getImage("src//duo.png");
 		// Colocar icono
 		setIconImage(miIcono);
-		
+
 		// Llamar a la clase que contiene la imagen
 		LaminaConImagen lamina = new LaminaConImagen();
 		// Añadir la imagen
@@ -114,7 +114,7 @@ public class Duolingo extends JFrame implements WindowListener, ActionListener{
 		// Método para cerrar la ventana al pulsar el botón cerrar
 		System.exit(0);
 	}
-	
+
 	public void windowActivated(WindowEvent arg0) {}
 	public void windowClosed(WindowEvent arg0) {}
 	public void windowDeactivated(WindowEvent arg0) {}
@@ -137,7 +137,7 @@ public class Duolingo extends JFrame implements WindowListener, ActionListener{
 			new Ayuda();
 			setVisible(false);
 		}
-		
+
 		else if (menuTopTen10.equals(arg0.getSource())) 
 		{
 			new Top_Ten();
@@ -175,7 +175,7 @@ public class Duolingo extends JFrame implements WindowListener, ActionListener{
 					menuAyudaVer.doClick();
 				}
 			}
-			
+
 			// Si se pulsa la tecla Escape
 			else if (codigo==27) {
 				// Cerrar el Programa

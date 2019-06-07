@@ -26,12 +26,12 @@ public class NuevaPartida extends JFrame implements WindowListener, ActionListen
 	// Campo de Texto y tamaño al campo
 	JTextField txtJugador = new JTextField(15);
 	JButton btnComenzar = new JButton("Comenzar Partida");
-	
+
 	// Paneles
 	JPanel pnlSuperior = new JPanel();
 	JPanel pnlCentral = new JPanel();
 	JPanel pnlInferior = new JPanel();
-	
+
 	NuevaPartida(String nombreJugador){
 		Toolkit mipantalla = Toolkit.getDefaultToolkit();
 
@@ -57,7 +57,7 @@ public class NuevaPartida extends JFrame implements WindowListener, ActionListen
 		Image miIcono = mipantalla.getImage("src//duo.png");
 		// Colocar icono
 		setIconImage(miIcono);
-			
+
 		// Tamaño a la ventana
 		setSize(300,150);
 		// Ventana al centro
@@ -69,7 +69,7 @@ public class NuevaPartida extends JFrame implements WindowListener, ActionListen
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		String nombreJugador = txtJugador.getText();
-		
+
 		if (btnComenzar.equals(arg0.getSource())) {
 			if (nombreJugador.equals("")) {
 				JOptionPane.showMessageDialog(null, "Tiene que proporcionar un nombre...", "Error", JOptionPane.ERROR_MESSAGE);

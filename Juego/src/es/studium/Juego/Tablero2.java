@@ -28,7 +28,7 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 	JLabel lblSeleccionar = new JLabel("Seleccione la traducción correcta de esta frase");
 	JLabel lblFrase = new JLabel("");
 
-	JButton btn1 = new JButton("Esta mañana no he desayunado");
+	JButton btn1 = new JButton("Hoy no he desayunado");
 	JButton btn2 = new JButton();
 	JButton btnCalificar = new JButton("Calificar");
 
@@ -44,12 +44,13 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 	String login = "root";
 	String password = "Studium2018;";
 	String sentencia = null;
-	static Connection connection = null;
+	Connection connection = null;
 	Statement statement = null;
 	ResultSet rs = null;
 
 	String nombrejugador;
 	int btn1click = 1;
+	int btn2click = 2;
 
 	Tablero2(String jugador)
 	{
@@ -158,7 +159,7 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 		return idJugador;
 	}
 
-	public static void desconectar() {
+	public void desconectar() {
 		try
 		{
 			if(connection!=null)
@@ -222,7 +223,7 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 					JOptionPane.showMessageDialog(null, "Se ha producido un error", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 				desconectar();
-			}else if(btn1click!=1){
+			}else if(btn2click!=1){
 				int seleccion = JOptionPane.showOptionDialog(
 						NuevaPartida2,
 						"Ha perdido esta pregunta, no se decaiga hombre, juegue de nuevo", 
