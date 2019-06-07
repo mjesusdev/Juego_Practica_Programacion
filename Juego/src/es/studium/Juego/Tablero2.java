@@ -178,6 +178,7 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 		if (btn1.equals(ae.getSource()))
 		{	
 			btnCalificar.setEnabled(true);
+			btn1click++;
 		}
 
 		else if (btn2.equals(ae.getSource()))
