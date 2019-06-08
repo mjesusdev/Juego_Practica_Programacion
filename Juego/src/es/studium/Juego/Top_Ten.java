@@ -1,6 +1,7 @@
 package es.studium.Juego;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Image;
 import java.awt.event.*;
 import java.sql.*;
@@ -29,17 +30,17 @@ public class Top_Ten extends JFrame implements WindowListener, ActionListener{
 	JPanel pnlVolver = new JPanel();
 
 	// Base de Datos
-	static String driver = "com.mysql.jdbc.Driver";
-	static String url = "jdbc:mysql://localhost:3306/duolingobd?autoReconnect=true&useSSL=false";
-	static String login = "root";
-	static String password = "Studium2018;";
-	static String sentencia = "SELECT idJugador AS 'Nº Jugador', nombreJugador AS 'Jugador', puntos AS 'Puntos', "
-			+ "preguntas_Correctas AS 'Preguntas Correctas', "
+	String driver = "com.mysql.jdbc.Driver";
+	String url = "jdbc:mysql://localhost:3306/duolingobd?autoReconnect=true&useSSL=false";
+	String login = "root";
+	String password = "Studium2018;";
+	String sentencia = "SELECT idJugador AS 'Nº Jugador', nombreJugador AS 'Jugador', puntos AS 'Puntos', "
+			+ "preguntas_Correctas AS 'Correctas', "
 			+ "preguntas_Incorrectas AS 'Incorrectas' "
 			+ "FROM jugador ORDER BY 3 DESC;";
-	static Connection connection = null;
-	static Statement statement = null;
-	static ResultSet rs = null;
+	Connection connection = null;
+	Statement statement = null;
+	ResultSet rs = null;
 	
 	Top_Ten()
 	{
@@ -50,6 +51,8 @@ public class Top_Ten extends JFrame implements WindowListener, ActionListener{
 		
 		tablaTop10 = new JTable(rellenarTabla(),titulos);
 		tablaTop10.setModel(modelo);
+		// Aplicar un color de fondo a la tabla
+		tablaTop10.setBackground(Color.decode("#d8ffff"));
 		// No editar la tabla
 		tablaTop10.setEnabled(false);
 		
@@ -109,18 +112,18 @@ public class Top_Ten extends JFrame implements WindowListener, ActionListener{
 
 		catch (ClassNotFoundException cnfe)
 		{
-			System.out.println("Error 1: "+cnfe.getMessage());
+			JOptionPane.showMessageDialog(null, "Error", "No se puede cargar el Driver", JOptionPane.ERROR_MESSAGE);
 		}
 
 		catch (SQLException sqle)
 		{
-			System.out.println("Error 2: "+sqle.getMessage());
+			JOptionPane.showMessageDialog(null, "Error", "Error, por favor corrija los fallos", JOptionPane.ERROR_MESSAGE);
 		}
 		desconectar();
 		return null;
 	}
 	
-	public static void desconectar() {
+	public void desconectar() {
 		try
 		{
 			if(connection!=null)
@@ -130,7 +133,7 @@ public class Top_Ten extends JFrame implements WindowListener, ActionListener{
 		}
 		catch (SQLException e)
 		{
-			System.out.println("Error 3: "+e.getMessage());
+			JOptionPane.showMessageDialog(null, "Error", "No se puede cerrar la conexión con la BD", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 

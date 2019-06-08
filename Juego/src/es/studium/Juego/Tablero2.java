@@ -50,7 +50,6 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 
 	String nombrejugador;
 	int btn1click = 1;
-	int btn2click = 2;
 
 	Tablero2(String jugador)
 	{
@@ -158,6 +157,30 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 		desconectar();
 		return idJugador;
 	}
+	
+	public int preguntasCorrectas() throws ClassNotFoundException, SQLException{
+		Class.forName(driver);
+		connection = DriverManager.getConnection(url, login, password);
+		statement = connection.createStatement();
+		sentencia = "SELECT preguntas_Correctas FROM jugador WHERE nombreJugador = '"+nombrejugador+"';";
+		rs = statement.executeQuery(sentencia);
+		rs.next();
+		int preguntasCorrectas = rs.getInt("preguntas_Correctas");
+		desconectar();
+		return preguntasCorrectas+1;
+	}
+	
+	public int preguntasIncorrectas() throws ClassNotFoundException, SQLException{
+		Class.forName(driver);
+		connection = DriverManager.getConnection(url, login, password);
+		statement = connection.createStatement();
+		sentencia = "SELECT preguntas_Incorrectas FROM jugador WHERE nombreJugador = '"+nombrejugador+"';";
+		rs = statement.executeQuery(sentencia);
+		rs.next();
+		int preguntasIncorrectas = rs.getInt("preguntas_Incorrectas");
+		desconectar();
+		return preguntasIncorrectas+1;
+	}
 
 	public void desconectar() {
 		try
@@ -190,29 +213,13 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 			if (btn1click==1) 
 			{
 				btn1click++;
-				int seleccion = JOptionPane.showOptionDialog(
-						NuevaPartida2,
-						"Ha ganado la partida, ¡bien hecho!", 
-						"Seleccione que desea realizar",
-						JOptionPane.YES_NO_CANCEL_OPTION,
-						JOptionPane.INFORMATION_MESSAGE,
-						null, new Object[] { "Volver al menú principal del Juego", "Iniciar nueva partida"},
-						"opcion 1");
-
-				if (seleccion==0) {
-					new Duolingo();
-					NuevaPartida2.dispose();
-				}else {
-					new Tablero(nombrejugador);
-					NuevaPartida2.dispose();
-				}
 
 				try
 				{
 					Class.forName(driver);
 					connection = DriverManager.getConnection(url, login, password);
 					statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_READ_ONLY);
-					statement.executeUpdate("UPDATE jugador SET preguntas_Correctas= '2', puntos= '100' WHERE idJugador = "+sacaridJugador()+";");
+					statement.executeUpdate("UPDATE jugador SET preguntas_Correctas= "+preguntasCorrectas()+", puntos= '100' WHERE idJugador = "+sacaridJugador()+";");
 				}
 
 				catch (ClassNotFoundException cnfe)
@@ -224,30 +231,30 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 					JOptionPane.showMessageDialog(null, "Se ha producido un error", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 				desconectar();
-			}else if(btn2click!=1){
+
 				int seleccion = JOptionPane.showOptionDialog(
 						NuevaPartida2,
-						"Ha perdido esta pregunta, no se decaiga hombre, juegue de nuevo", 
+						"Ha ganado la partida, ¡bien hecho!", 
 						"Seleccione que desea realizar",
 						JOptionPane.YES_NO_CANCEL_OPTION,
-						JOptionPane.ERROR_MESSAGE,
-						null, new Object[] { "Volver al menú principal del Juego", "Iniciar nueva partida"},
+						JOptionPane.INFORMATION_MESSAGE,
+						null, new Object[] { "Volver al menú principal del Juego", "Iniciar otra nueva partida"},
 						"opcion 1");
 
 				if (seleccion==0) {
 					new Duolingo();
 					NuevaPartida2.dispose();
 				}else {
-					new Tablero(nombrejugador);
+					new Tablero3(nombrejugador);
 					NuevaPartida2.dispose();
 				}
-
+			}else if(btn1click!=1){				
 				try
 				{
 					Class.forName(driver);
 					connection = DriverManager.getConnection(url, login, password);
-					statement = connection.createStatement();
-					statement.executeUpdate("UPDATE jugador SET preguntas_Incorrectas= '2' WHERE nombreJugador = '"+sacaridJugador()+"';");
+					statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_READ_ONLY);
+					statement.executeUpdate("UPDATE jugador SET preguntas_Incorrectas= '"+preguntasIncorrectas()+"' WHERE idJugador = '"+sacaridJugador()+"';");
 				}
 
 				catch (ClassNotFoundException cnfe)
@@ -259,6 +266,23 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 					JOptionPane.showMessageDialog(null, "Se ha producido un error", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 				desconectar();
+				
+				int seleccion = JOptionPane.showOptionDialog(
+						NuevaPartida2,
+						"Ha perdido esta pregunta, no se decaiga hombre, juegue de nuevo", 
+						"Seleccione que desea realizar",
+						JOptionPane.YES_NO_CANCEL_OPTION,
+						JOptionPane.ERROR_MESSAGE,
+						null, new Object[] { "Volver al menú principal del Juego", "Iniciar otra nueva partida"},
+						"opcion 1");
+
+				if (seleccion==0) {
+					new Duolingo();
+					NuevaPartida2.dispose();
+				}else {
+					new Tablero3(nombrejugador);
+					NuevaPartida2.dispose();
+				}
 			}
 		}
 	}
