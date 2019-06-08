@@ -54,7 +54,7 @@ public class NuevaPartida extends JFrame implements WindowListener, ActionListen
 		txtJugador.addKeyListener(this);
 
 		// Establecer un icono a la aplicación
-		Image miIcono = mipantalla.getImage("src//duo.png");
+		Image miIcono = mipantalla.getImage("duo.png");
 		// Colocar icono
 		setIconImage(miIcono);
 

@@ -92,7 +92,7 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 
 	public void colocarIcono() {
 		Toolkit mipantalla = Toolkit.getDefaultToolkit();
-		Image miIcono = mipantalla.getImage("src//duo.png");
+		Image miIcono = mipantalla.getImage("duo.png");
 		NuevaPartida2.setIconImage(miIcono);
 	}
 
@@ -244,7 +244,7 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 				if (seleccion==0) {
 					new Duolingo();
 					NuevaPartida2.dispose();
-				}else {
+				}else if(seleccion==1){
 					new Tablero3(nombrejugador);
 					NuevaPartida2.dispose();
 				}
@@ -279,7 +279,7 @@ public class Tablero2 extends WindowAdapter implements ActionListener{
 				if (seleccion==0) {
 					new Duolingo();
 					NuevaPartida2.dispose();
-				}else {
+				}else if(seleccion==1){
 					new Tablero3(nombrejugador);
 					NuevaPartida2.dispose();
 				}

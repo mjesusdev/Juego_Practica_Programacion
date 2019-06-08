@@ -62,7 +62,7 @@ public class Duolingo extends JFrame implements WindowListener, ActionListener{
 		addKeyListener(tecla);
 
 		// Establecer un icono a la aplicación
-		Image miIcono = mipantalla.getImage("src//duo.png");
+		Image miIcono = mipantalla.getImage("duo.png");
 		// Colocar icono
 		setIconImage(miIcono);
 
@@ -89,7 +89,7 @@ public class Duolingo extends JFrame implements WindowListener, ActionListener{
 			super.paintComponents(g);
 
 			// Especificar imagen
-			File miImagen = new File("src//duolingo2.png") ;
+			File miImagen = new File("duolingo2.png") ;
 
 			try {
 				imagen = ImageIO.read(miImagen);
@@ -134,8 +134,14 @@ public class Duolingo extends JFrame implements WindowListener, ActionListener{
 
 		else if (menuAyudaVer.equals(arg0.getSource())) 
 		{
-			new Ayuda();
-			setVisible(false);
+			try 
+			{
+				Runtime.getRuntime().exec("hh.exe ayuda_duolingo.chm");
+			}
+			catch (IOException e) 
+			{
+				JOptionPane.showMessageDialog(this, "No se puede abrir la ayuda", "Fallo al abrir la ayuda", JOptionPane.ERROR_MESSAGE);
+			}
 		}
 
 		else if (menuTopTen10.equals(arg0.getSource())) 

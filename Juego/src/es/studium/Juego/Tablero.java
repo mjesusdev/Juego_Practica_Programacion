@@ -124,7 +124,7 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 
 	public void insertarIcono() {
 		Toolkit mipantalla = Toolkit.getDefaultToolkit();
-		Image miIcono = mipantalla.getImage("src//duo.png");
+		Image miIcono = mipantalla.getImage("duo.png");
 		setIconImage(miIcono);
 	}
 
@@ -258,7 +258,7 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 						"Seleccione que desea realizar",
 						JOptionPane.YES_NO_CANCEL_OPTION,
 						JOptionPane.QUESTION_MESSAGE,
-						null, new Object[] { "Nueva Partida", "Volver a la partida"},
+						null, new Object[] { "Nueva Partida", "Volver al menú principal"},
 						"opcion 1");
 
 				if (seleccion==0) {
@@ -283,7 +283,10 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 						JOptionPane.showMessageDialog(null, "Se ha producido un error", "Error", JOptionPane.ERROR_MESSAGE);
 					}
 					desconectar();
-				}	
+				}else {
+					this.dispose();
+					new Duolingo();
+				}
 			}
 
 			else{
@@ -293,7 +296,7 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 						"Seleccione que desea realizar",
 						JOptionPane.YES_NO_CANCEL_OPTION,
 						JOptionPane.ERROR_MESSAGE,
-						null, new Object[] { "Nueva Partida", "Volver a la partida"},
+						null, new Object[] { "Nueva Partida", "Volver al menú principal"},
 						"opcion 1");
 
 				if (seleccion==0) {
@@ -318,7 +321,10 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 						JOptionPane.showMessageDialog(null, "Error", "Error, por favor corrija los fallos", JOptionPane.ERROR_MESSAGE);
 					}
 					desconectar();
-				}	
+				}else {
+					this.dispose();
+					new Duolingo();
+				}
 			}
 		}
 

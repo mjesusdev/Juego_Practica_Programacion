@@ -37,7 +37,7 @@ public class Top_Ten extends JFrame implements WindowListener, ActionListener{
 	String sentencia = "SELECT idJugador AS 'Nº Jugador', nombreJugador AS 'Jugador', puntos AS 'Puntos', "
 			+ "preguntas_Correctas AS 'Correctas', "
 			+ "preguntas_Incorrectas AS 'Incorrectas' "
-			+ "FROM jugador ORDER BY 3 DESC;";
+			+ "FROM jugador ORDER BY 3 DESC, 4 DESC;";
 	Connection connection = null;
 	Statement statement = null;
 	ResultSet rs = null;
@@ -52,7 +52,7 @@ public class Top_Ten extends JFrame implements WindowListener, ActionListener{
 		tablaTop10 = new JTable(rellenarTabla(),titulos);
 		tablaTop10.setModel(modelo);
 		// Aplicar un color de fondo a la tabla
-		tablaTop10.setBackground(Color.decode("#d8ffff"));
+		tablaTop10.setBackground(Color.decode("#e9ffdb"));
 		// No editar la tabla
 		tablaTop10.setEnabled(false);
 		
@@ -76,7 +76,7 @@ public class Top_Ten extends JFrame implements WindowListener, ActionListener{
 	}
 	
 	public void colocarIcono() {
-	    ImageIcon ImageIcon = new ImageIcon("src/duo.png");
+	    ImageIcon ImageIcon = new ImageIcon("duo.png");
         Image image = ImageIcon.getImage();
         this.setIconImage(image);
 	}
