@@ -32,7 +32,7 @@ public class Top_Ten extends JFrame implements WindowListener, ActionListener{
 	// Base de Datos
 	String driver = "com.mysql.jdbc.Driver";
 	String url = "jdbc:mysql://localhost:3306/duolingobd?autoReconnect=true&useSSL=false";
-	String login = "root";
+	String login = "admin";
 	String password = "Studium2018;";
 	String sentencia = "SELECT idJugador AS 'Nº Jugador', nombreJugador AS 'Jugador', puntos AS 'Puntos', "
 			+ "preguntas_Correctas AS 'Correctas', "

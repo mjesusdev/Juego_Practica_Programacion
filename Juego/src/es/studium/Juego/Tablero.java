@@ -58,7 +58,7 @@ public class Tablero extends JFrame implements WindowListener, ActionListener{
 	// BD
 	String driver = "com.mysql.jdbc.Driver";
 	String url = "jdbc:mysql://localhost:3306/duolingobd?autoReconnect=true&useSSL=false";
-	String login = "root";
+	String login = "admin";
 	String password = "Studium2018;";
 	String sentencia = null;
 	Connection connection = null;
